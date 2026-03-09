@@ -5,9 +5,25 @@
   "main": "dist/app.js",
   "type": "module",
   "imports": {
-    "#utils": {
-      "development": "./src/utils/index.ts",
-      "default": "./dist/utils/index.js"
+    "#controllers": {
+      "development": "./src/controllers/index.ts",
+      "default": "/dist/controllers/index.js"
+    },
+    "#middleware": {
+      "development": "./src/middleware/index.ts",
+      "default": "/dist/middleware/index.js"
+    },
+    "#schemas": {
+      "development": "./src/schemas/index.ts",
+      "default": "/dist/schemas/index.js"
+    },
+    "#models": {
+      "development": "./src/models/index.ts",
+      "default": "/dist/models/index.js"
+    },
+    "#routes": {
+      "development": "./src/routes/index.ts",
+      "default": "/dist/routes/index.js"
     }
   },
   "scripts": {
@@ -21,7 +37,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^24.10.12",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^9.2.4",
+    "zod": "^4.3.6"
   }
 }
