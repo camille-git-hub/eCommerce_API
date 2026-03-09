@@ -2,6 +2,7 @@ import express from 'express';
 import '../src/db/index.ts';
 import { userRoutes } from './routes/index.ts';
 import { errorHandler, notFoundHandler } from '#middleware';
+
 const app = express();
 const port = process.env.PORT || 3000;
 

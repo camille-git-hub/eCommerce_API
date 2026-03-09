@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { createUser, deleteUser, getUserById, getUsers, updateUser } from '#controllers';
 import { validateBody } from '#middleware';
 import { userSchema } from '../schemas/userSchema.ts';
+import { createUser, deleteUser, getUserById, getUsers, updateUser } from '#controllers';
 
 const userRoutes = Router();
 

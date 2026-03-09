@@ -1,1 +1,1 @@
-export { default as createUser, deleteUser, getUserById, getUsers, updateUser } from './users.ts';
+export { createUser, deleteUser, getUserById, getUsers, updateUser } from './users.ts';

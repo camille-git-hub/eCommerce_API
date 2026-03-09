@@ -18,7 +18,7 @@ export const getUsers: RequestHandler<unknown, UserDTO[]> = async (req, res) => 
   res.json(users);
 };
 
-export const createUser: RequestHandler<unknown, unknown, UserDTO, UserInputDTO> = async (req, res) => {
+export const createUser: RequestHandler<unknown, UserDTO, UserInputDTO> = async (req, res) => {
   const {
     body: { email }
   } = req;
