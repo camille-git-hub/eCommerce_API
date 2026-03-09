@@ -19,4 +19,10 @@ export const userSchema = z
     })
     .strict();
 
+export const newUserSchema = z
+    .object({
+        ...userInputSchema.shape,
+    })
+    .strict();
+
 export default userSchema;
