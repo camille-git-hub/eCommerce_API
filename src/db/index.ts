@@ -1,13 +1,10 @@
 import mongoose from 'mongoose';
- 
+
 try {
-  // Connect
-  await mongoose.connect(process.env.MONGO_URI ?? "",
-    {dbName: "e-commerce-api"}
-  );
-  console.log('\\x1b[35mMongoDB connected via Mongoose\\x1b[0m');
+  if (!process.env.MONGO_URI) throw new Error('Missing MONGO_URI');
+  await mongoose.connect(process.env.MONGO_URI ?? "", { dbName: "ecommerce_api" });
+  console.log('MongoDB connected');
 } catch (error) {
-  // Log error and end Node process if it fails
   console.error('MongoDB connection error:', error);
   process.exit(1);
 }

@@ -1,14 +1,17 @@
 import express from 'express';
 import '../src/db/index.ts';
-import { userRoutes } from './routes/index.ts';
+import { userRoutes, productRoutes, categoryRoutes, orderRoutes } from './routes/index.ts';
 import { errorHandler, notFoundHandler } from '#middleware';
+
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
 app.use('/users', userRoutes);
-
+app.use('/products', productRoutes);
+app.use('/categories', categoryRoutes);
+app.use('/orders', orderRoutes);
 app.use('*splat', notFoundHandler);
 
 app.use(errorHandler);
