@@ -3,9 +3,8 @@ import { Types } from "mongoose";
 
 export const orderInputSchema = z
     .object({ 
-        userID: z.string().min(1),
+        userID: z.instanceof(Types.ObjectId),
         items: z.array(z.any()).min(1),
-        totalPrice: z.number().min(0),
         status: z.enum(['pending', 'shipped', 'delivered', 'cancelled']).default('pending')
     })
     .strict();
@@ -13,6 +12,7 @@ export const orderInputSchema = z
 export const orderSchema = z
     .object({ 
         _id: z.instanceof(Types.ObjectId),
+        totalPrice: z.number().min(0),
         ...orderInputSchema.shape,
     })
     .strict();

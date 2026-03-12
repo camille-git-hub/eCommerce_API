@@ -18,12 +18,18 @@ export const getOrders: RequestHandler<unknown, OrderDTO[]> = async (req, res) =
 
 export const createOrder: RequestHandler<unknown, OrderDTO, OrderInputDTO> = async (req, res) => {
   const {
-    body: { userID, items, totalPrice, status }
+    body: { userID, items, status, totalPrice }
   } = req;
-  const found = await Order.findOne({ userID, items, totalPrice, status });
 
-  if (found) throw Error('Order already exists', { cause: { status: 400 } });
-  const order = await Order.create(req.body satisfies OrderInputDTO);
+  const productID = await Product.findOne({ _id: items[0].productID }).lean();
+  if (!productID) throw Error('Product not found', { cause: { status: 404 } });
+
+  const userIDExists = await Order.exists({ userID });
+  if (!userIDExists) throw Error('User not found', { cause: { status: 404 } });
+
+  const total = items.reduce((total, item) => total + item.price * item.quantity, 0);
+
+    const order = await Order.create({ userID, items, totalPrice: total, status } satisfies OrderInputDTO);
 
   res.status(201).json(order);
 };
@@ -44,12 +50,19 @@ export const getOrderById: RequestHandler<IdParams, OrderDTO> = async (req, res)
 export const updateOrder: RequestHandler<IdParams, OrderDTO, OrderInputDTO> = async (req, res) => {
   const {
     params: { id },
-    body
+    body: { userID, items }
   } = req;
 
   if (!isValidObjectId(id)) throw new Error('Invalid id', { cause: { status: 400 } });
 
-  const order = await Order.findByIdAndUpdate(id, body, { new: true }).lean();
+  const productID = await Product.findOne({ _id: items[0].productID }).lean();
+  if (!productID) throw Error('Product not found', { cause: { status: 404 } });
+
+  const userIDExists = await Order.exists({ userID });
+  if (!userIDExists) throw Error('User not found', { cause: { status: 404 } });
+
+
+  const order = await Order.findByIdAndUpdate(id, { new: true }).lean();
 
   if (!order) throw new Error('Order not found', { cause: { status: 404 } });
 
