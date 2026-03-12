@@ -11,14 +11,14 @@ type IdParams = {
   id: string;
 };
 
-export const getOrders: RequestHandler<unknown, OrderDTO[]> = async (req, res) => {
+export const getOrders: RequestHandler<unknown, OrderInputDTO[]> = async (req, res) => {
   const orders = await Order.find().lean();
   res.json(orders);
 };
 
-export const createOrder: RequestHandler<unknown, OrderDTO, OrderInputDTO> = async (req, res) => {
+export const createOrder: RequestHandler<unknown, OrderInputDTO> = async (req, res) => {
   const {
-    body: { userID, items, status, totalPrice }
+    body: { userID, items, status }
   } = req;
 
   const productID = await Product.findOne({ _id: items[0].productID }).lean();
@@ -27,14 +27,14 @@ export const createOrder: RequestHandler<unknown, OrderDTO, OrderInputDTO> = asy
   const userIDExists = await Order.exists({ userID });
   if (!userIDExists) throw Error('User not found', { cause: { status: 404 } });
 
-  const total = items.reduce((total, item) => total + item.price * item.quantity, 0);
+  const totalPrice = items.reduce((total: number, item: { price: number; quantity: number }) => total + item.price * item.quantity, 0);
 
-    const order = await Order.create({ userID, items, totalPrice: total, status } satisfies OrderInputDTO);
+    const order = await Order.create({ userID, items, totalPrice, status });
 
   res.status(201).json(order);
 };
 
-export const getOrderById: RequestHandler<IdParams, OrderDTO> = async (req, res) => {
+export const getOrderById: RequestHandler<IdParams, OrderInputDTO> = async (req, res) => {
   const {
     params: { id }
   } = req;
@@ -47,7 +47,7 @@ export const getOrderById: RequestHandler<IdParams, OrderDTO> = async (req, res)
   res.json(order);
 };
 
-export const updateOrder: RequestHandler<IdParams, OrderDTO, OrderInputDTO> = async (req, res) => {
+export const updateOrder: RequestHandler<IdParams, OrderInputDTO> = async (req, res) => {
   const {
     params: { id },
     body: { userID, items }
