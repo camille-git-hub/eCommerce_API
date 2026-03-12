@@ -5,7 +5,7 @@ export const categorySchema = z
     .object({ 
         _id: z.instanceof(Types.ObjectId),
         categoryName: z.string(),
-        categoryTag: z.string()
+        categoryTag: z.string().optional().nullable(),
     })
     .strict();
 

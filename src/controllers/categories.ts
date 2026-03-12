@@ -12,8 +12,8 @@ type IdParams = {
 };
 
 export const getCategory: RequestHandler<unknown, CategoryDTO[]> = async (req, res) => {
-  const categories = await Category.find().lean();
-  res.json(categories);
+  const category = await Category.find();
+  res.json(category);
 };
 
 export const createCategory: RequestHandler<unknown, CategoryDTO, CategoryInputDTO> = async (req, res) => {

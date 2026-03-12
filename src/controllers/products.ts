@@ -40,12 +40,6 @@ export const getProductById: RequestHandler<IdParams, ProductDTO> = async (req, 
 
   if (!product) throw new Error('Product not found', { cause: { status: 404 } });
 
-  const category = await Category.findById(product.categoryID).lean();
-
-  if (category) {
-    product.categoryID = category._id;
-  }
-
   res.json(product);
 };
 

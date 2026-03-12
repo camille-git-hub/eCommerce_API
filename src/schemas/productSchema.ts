@@ -7,7 +7,7 @@ export const productSchema = z
         productName: z.string(),
         price: z.number(),
         description: z.string(),
-        categoryID: z.instanceof(Types.ObjectId),
+        categoryName: z.string(),
     })
     .strict();
 
