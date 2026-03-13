@@ -1,4 +1,5 @@
 import type { RequestHandler } from 'express';
+import type { Response } from 'express';
 import { isValidObjectId, type Types } from 'mongoose';
 import { Order, Product, User } from '#models';
 import type { OrderInputDTO, OrderDTO } from '../schemas/orderSchema.ts';
@@ -7,13 +8,13 @@ type IdParams = {
   id: string;
 };
 
-export const getOrders: RequestHandler<unknown, unknown, OrderDTO[]> = async (req, res) => {
+export const getOrders: RequestHandler<unknown, unknown, unknown> = async (req, res) => {
   const orders = await Order.find().lean();
 
   return res.json(orders);
 };
 
-export const createOrder: RequestHandler<unknown, OrderInputDTO, OrderDTO> = async (req, res) => {
+export const createOrder: RequestHandler<unknown, unknown, OrderInputDTO> = async (req, res) => {
   const {
     body: { userId, items, status }
   } = req;
@@ -28,7 +29,7 @@ export const createOrder: RequestHandler<unknown, OrderInputDTO, OrderDTO> = asy
 
     const order = await Order.create({ userId, items, totalPrice, status });
 
-    res.json(order);
+    res.status(201).json(order);
 
 };
 
@@ -53,20 +54,10 @@ export const updateOrder: RequestHandler<IdParams, unknown, OrderInputDTO> = asy
 
   if (!isValidObjectId(id)) throw new Error('Invalid id', { cause: { status: 400 } });
 
-  const productId = await Product.findOne({ _id: items[0]!.productId }).lean();
-  if (!productId) throw Error('Product not found', { cause: { status: 404 } });
-
-  const orderIdExists = await Order.exists({ userId });
-    if (!orderIdExists) throw Error('Order not found', { cause: { status: 404 } });
-
-    const userIdExists = await User.exists({ _id: userId });
-  if (!userIdExists) throw Error('User not found', { cause: { status: 404 } });
-
-  const order = await Order.findByIdAndUpdate(id, { new: true }).lean();
+  const order = await Order.findByIdAndUpdate(id, req.body,{ new: true }).lean();
 
   if (!order) throw new Error('Order not found', { cause: { status: 404 } });
 
-  console.log(order);
   res.json(order);
 };
 

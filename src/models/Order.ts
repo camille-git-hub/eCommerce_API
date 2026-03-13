@@ -12,7 +12,7 @@ const orderItemSchema = new Schema(
 const orderSchema = new Schema(
   { 
     userId: { type: Schema.Types.ObjectId, ref: "User", required: [true, 'User ID is required'] },
-    items: { type: orderItemSchema, required: [true, 'Order items are required'] },
+    items: { type: [orderItemSchema], required: [true, 'Order items are required'] },
     totalPrice: { type: Number, min: [0, 'Total price must be a positive number'] },
     status: { type: String, enum: ['pending', 'shipped', 'delivered', 'cancelled'], default: 'pending' }
   },
