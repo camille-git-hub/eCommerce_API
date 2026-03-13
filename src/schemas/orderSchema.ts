@@ -1,21 +1,22 @@
 import { z } from "zod";
+import { Types } from "mongoose";
 
 export const orderItemSchema = z.object({
-    productID: z.string({ error: "Product ID is required" }),
+    productId: z.string({ error: "Product ID is required" }),
     quantity: z.number().min(1),
 }).strict();
 
 export const orderInputSchema = z
     .object({ 
-        userID: z.string({ error: "User ID is required" }),
+        userId: z.string({ error: "User ID is required" }),
         items: z.array(orderItemSchema).min(1, { message: "At least one order item is required" })  ,
         status: z.enum(['pending', 'shipped', 'delivered', 'cancelled']).default('pending')
     })
     .strict();
 
 export const orderSchema = z
-    .object({ 
-        _id: z.string(),
+    .object({
+        _id: z.instanceof(Types.ObjectId).toString(),
         totalPrice: z.number().min(0),
         ...orderInputSchema.shape,
     })

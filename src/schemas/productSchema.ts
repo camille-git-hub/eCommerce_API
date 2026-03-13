@@ -3,11 +3,11 @@ import { Types } from "mongoose";
 
 export const productSchema = z
     .object({ 
-        _id: z.instanceof(Types.ObjectId),
+        _id: z.instanceof(Types.ObjectId).toString(),
         productName: z.string(),
         price: z.number(),
         description: z.string(),
-        categoryID: z.instanceof(Types.ObjectId),
+        categoryId: z.instanceof(Types.ObjectId).toString(),
     })
     .strict();
 
