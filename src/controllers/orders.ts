@@ -13,7 +13,7 @@ export const getOrders: RequestHandler<unknown, unknown, OrderDTO[]> = async (re
   return res.json(orders);
 };
 
-export const createOrder: RequestHandler<unknown, OrderDTO, OrderInputDTO> = async (req, res) => {
+export const createOrder: RequestHandler<unknown, OrderInputDTO, OrderDTO> = async (req, res) => {
   const {
     body: { userId, items, status }
   } = req;

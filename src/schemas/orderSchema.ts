@@ -2,13 +2,13 @@ import { z } from "zod";
 import { Types } from "mongoose";
 
 export const orderItemSchema = z.object({
-    productId: z.instanceof(Types.ObjectId, { message: "Product ID must be valid" }),
+    productId: z.instanceof(Types.ObjectId),
     quantity: z.number().min(1),
 }).strict();
 
 export const orderInputSchema = z
     .object({ 
-        userId: z.instanceof(Types.ObjectId, { message: "User ID must be valid" }),
+        userId: z.instanceof(Types.ObjectId),
         items: z.array(orderItemSchema).min(1, { message: "At least one item is required" }),
         status: z.enum(['pending', 'shipped', 'delivered', 'cancelled']).default('pending')
     })
