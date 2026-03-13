@@ -1,22 +1,26 @@
 import { z } from "zod";
 import { Types } from "mongoose";
 
+const objectIdString = z.string().refine((value) => Types.ObjectId.isValid(value), {
+    message: "Invalid ObjectId format"
+});
+
 export const orderItemSchema = z.object({
-    productId: z.string({ error: "Product ID is required" }),
+    productId: objectIdString,
     quantity: z.number().min(1),
 }).strict();
 
 export const orderInputSchema = z
     .object({ 
-        userId: z.string({ error: "User ID is required" }),
-        items: z.array(orderItemSchema).min(1, { message: "At least one order item is required" })  ,
+        userId: objectIdString,
+        items: z.array(orderItemSchema).min(1, { message: "At least one item is required" }),
         status: z.enum(['pending', 'shipped', 'delivered', 'cancelled']).default('pending')
     })
     .strict();
 
 export const orderSchema = z
     .object({
-        _id: z.instanceof(Types.ObjectId).toString(),
+        _id: z.string(),
         totalPrice: z.number().min(0),
         ...orderInputSchema.shape,
     })

@@ -11,7 +11,7 @@ type IdParams = {
   id: string;
 };
 
-export const getProducts: RequestHandler<unknown, ProductDTO[]> = async (req, res) => {
+export const getProducts: RequestHandler<unknown, unknown> = async (req, res) => {
   const products = await Product.find().lean();
   res.json(products);
 };
@@ -32,7 +32,7 @@ export const createProduct: RequestHandler<unknown, ProductInputDTO> = async (re
   res.status(201).json(product);
 };
 
-export const getProductById: RequestHandler<IdParams, ProductDTO> = async (req, res) => {
+export const getProductById: RequestHandler<IdParams, ProductInputDTO> = async (req, res) => {
   const {
     params: { id }
   } = req;
@@ -46,7 +46,7 @@ export const getProductById: RequestHandler<IdParams, ProductDTO> = async (req, 
   res.json(product);
 };
 
-export const updateProduct: RequestHandler<IdParams, ProductDTO, ProductInputDTO> = async (req, res) => {
+export const updateProduct: RequestHandler<IdParams, ProductInputDTO> = async (req, res) => {
   const {
     params: { id },
     body

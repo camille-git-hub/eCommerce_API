@@ -1,0 +1,272 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "eCommerce API",
+    "version": "1.0.0"
+  },
+  "servers": [{ "url": "http://localhost:3000" }],
+  "paths": {
+    "/orders": {
+      "get": {
+        "summary": "List orders",
+        "tags": ["Orders"],
+        "responses": {
+          "200": { "description": "OK" }
+        }
+      },
+      "post": {
+        "summary": "Create an order",
+        "tags": ["Orders"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userId", "items"],
+                "properties": {
+                  "userId": { "type": "string", "example": "65f1c0c2e8b9c6a123456789" },
+                  "items": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "required": ["productId", "quantity"],
+                      "properties": {
+                        "productId": { "type": "string", "example": "65f1c0c2e8b9c6a123456780" },
+                        "quantity": { "type": "integer", "minimum": 1, "example": 2 }
+                      }
+                    }
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "shipped", "delivered", "cancelled"],
+                    "example": "pending"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created" },
+          "400": { "description": "Bad request" },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "summary": "Get order by id",
+        "tags": ["Orders"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "OK" },
+          "400": { "description": "Invalid id" },
+          "404": { "description": "Order not found" }
+        }
+      },
+      "put": {
+        "summary": "Update order",
+        "tags": ["Orders"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/paths/~1orders/post/requestBody/content/application~1json/schema" } } }
+        },
+        "responses": {
+          "200": { "description": "OK" },
+          "400": { "description": "Bad request" },
+          "404": { "description": "Order not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete order",
+        "tags": ["Orders"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "OK" },
+          "400": { "description": "Invalid id" },
+          "404": { "description": "Order not found" }
+        }
+      }
+    },
+
+    "/products": {
+      "get": {
+        "summary": "List products",
+        "tags": ["Products"],
+        "responses": { "200": { "description": "OK" } }
+      },
+      "post": {
+        "summary": "Create a product",
+        "tags": ["Products"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["productName", "description", "price", "categoryId"],
+                "properties": {
+                  "productName": { "type": "string", "example": "T-Shirt" },
+                  "description": { "type": "string", "example": "Cotton T-Shirt" },
+                  "price": { "type": "number", "example": 19.99 },
+                  "categoryId": { "type": "string", "example": "65f1c0c2e8b9c6a123456700" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created" },
+          "400": { "description": "Bad request" }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "summary": "Get product by id",
+        "tags": ["Products"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" }, "400": { "description": "Invalid id" }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "summary": "Update product",
+        "tags": ["Products"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/paths/~1products/post/requestBody/content/application~1json/schema" } } }
+        },
+        "responses": { "200": { "description": "OK" }, "400": { "description": "Bad request" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "summary": "Delete product",
+        "tags": ["Products"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" }, "400": { "description": "Invalid id" }, "404": { "description": "Not found" } }
+      }
+    },
+
+    "/users": {
+      "get": { "summary": "List users", "tags": ["Users"], "responses": { "200": { "description": "OK" } } },
+      "post": {
+        "summary": "Create user",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "email", "password"],
+                "properties": {
+                  "username": { "type": "string", "example": "camille" },
+                  "email": { "type": "string", "example": "camille@example.com" },
+                  "password": { "type": "string", "example": "secret" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Created" }, "400": { "description": "Bad request" } }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Get user by id",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" }, "400": { "description": "Invalid id" }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "summary": "Update user",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/paths/~1users/post/requestBody/content/application~1json/schema" } } }
+        },
+        "responses": { "200": { "description": "OK" }, "400": { "description": "Bad request" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "summary": "Delete user",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" }, "400": { "description": "Invalid id" }, "404": { "description": "Not found" } }
+      }
+    },
+
+    "/categories": {
+      "get": { "summary": "List categories", "tags": ["Categories"], "responses": { "200": { "description": "OK" } } },
+      "post": {
+        "summary": "Create category",
+        "tags": ["Categories"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["categoryName"],
+                "properties": {
+                  "categoryName": { "type": "string", "example": "Clothes" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Created" }, "400": { "description": "Bad request" } }
+      }
+    },
+    "/categories/{id}": {
+      "get": {
+        "summary": "Get category by id",
+        "tags": ["Categories"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" }, "400": { "description": "Invalid id" }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "summary": "Update category",
+        "tags": ["Categories"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/paths/~1categories/post/requestBody/content/application~1json/schema" } } }
+        },
+        "responses": { "200": { "description": "OK" }, "400": { "description": "Bad request" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "summary": "Delete category",
+        "tags": ["Categories"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" }, "400": { "description": "Invalid id" }, "404": { "description": "Not found" } }
+      }
+    }
+  }
+}

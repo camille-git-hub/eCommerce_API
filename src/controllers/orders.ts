@@ -1,22 +1,20 @@
 import type { RequestHandler } from 'express';
+import type { Response } from 'express';
 import { isValidObjectId, type Types } from 'mongoose';
-import type { z } from 'zod/v4';
-import { Order, orderItemSchema, Product, User } from '#models';
-import type { orderInputSchema, orderSchema } from '#schemas';
-
-export type OrderInputDTO = z.input<typeof orderInputSchema>;
-export type OrderDTO = z.infer<typeof orderSchema>;
+import { Order, Product, User } from '#models';
+import type { OrderInputDTO, OrderDTO } from '../schemas/orderSchema.ts';
 
 type IdParams = {
   id: string;
 };
 
-export const getOrders: RequestHandler<unknown, OrderDTO> = async (req, res) => {
+export const getOrders: RequestHandler<unknown, unknown, unknown> = async (req, res) => {
   const orders = await Order.find().lean();
-  res.json(orders);
+
+  return res.json(orders);
 };
 
-export const createOrder: RequestHandler<unknown, OrderDTO, OrderInputDTO> = async (req, res) => {
+export const createOrder: RequestHandler<unknown, unknown, OrderInputDTO> = async (req, res) => {
   const {
     body: { userId, items, status }
   } = req;
@@ -27,14 +25,15 @@ export const createOrder: RequestHandler<unknown, OrderDTO, OrderInputDTO> = asy
   const userIdExists = await User.exists({ _id: userId });
   if (!userIdExists) throw Error('User not found', { cause: { status: 404 } });
 
-  const totalPrice = items.reduce((total, item) => total + item.quantity * productId.price, 0);
+  const totalPrice = items.reduce((total: number, item: { quantity: number }) => total + item.quantity * productId.price, 0);
 
     const order = await Order.create({ userId, items, totalPrice, status });
 
-  res.status(201).json(order);
+    res.status(201).json(order);
+
 };
 
-export const getOrderById: RequestHandler<IdParams, OrderDTO> = async (req, res) => {
+export const getOrderById: RequestHandler<IdParams, unknown, OrderDTO> = async (req, res) => {
   const {
     params: { id }
   } = req;
@@ -47,21 +46,15 @@ export const getOrderById: RequestHandler<IdParams, OrderDTO> = async (req, res)
   res.json(order);
 };
 
-export const updateOrder: RequestHandler<IdParams, OrderDTO> = async (req, res) => {
+export const updateOrder: RequestHandler<IdParams, unknown, OrderInputDTO> = async (req, res) => {
   const {
     params: { id },
-    body: { userId, items }
+    body: { userId, items}
   } = req;
 
   if (!isValidObjectId(id)) throw new Error('Invalid id', { cause: { status: 400 } });
 
-  const productId = await Product.findOne({ _id: items[0].productId }).lean();
-  if (!productId) throw Error('Product not found', { cause: { status: 404 } });
-
-  const userIdExists = await Order.exists({ userId });
-  if (!userIdExists) throw Error('User not found', { cause: { status: 404 } });
-
-  const order = await Order.findByIdAndUpdate(id, { new: true }).lean();
+  const order = await Order.findByIdAndUpdate(id, req.body,{ new: true }).lean();
 
   if (!order) throw new Error('Order not found', { cause: { status: 404 } });
 

@@ -14,7 +14,7 @@ type IdParams = {
 };
 
 export const getUsers: RequestHandler<unknown, UserDTO[]> = async (req, res) => {
-  const users = await User.find().lean();
+  const users = await User.find().select("-password").lean();
   res.json(users);
 };
 
@@ -38,7 +38,7 @@ export const getUserById: RequestHandler<IdParams, UserDTO> = async (req, res) =
 
   if (!isValidObjectId(id)) throw new Error('Invalid id', { cause: { status: 400 } });
 
-  const user = await User.findById(id).lean();
+  const user = await User.findById(id).select("-password").lean();
 
   if (!user) throw new Error('User not found', { cause: { status: 404 } });
 
