@@ -1,7 +1,7 @@
 import type { RequestHandler } from 'express';
 import { isValidObjectId, type Types } from 'mongoose';
 import type { z } from 'zod/v4';
-import { Order, Product } from '#models';
+import { Order, orderItemSchema, Product, User } from '#models';
 import type { orderInputSchema, orderSchema } from '#schemas';
 
 export type OrderInputDTO = z.input<typeof orderInputSchema>;
@@ -11,25 +11,25 @@ type IdParams = {
   id: string;
 };
 
-export const getOrders: RequestHandler<unknown, OrderDTO[]> = async (req, res) => {
+export const getOrders: RequestHandler<unknown, OrderDTO> = async (req, res) => {
   const orders = await Order.find().lean();
   res.json(orders);
 };
 
 export const createOrder: RequestHandler<unknown, OrderDTO, OrderInputDTO> = async (req, res) => {
   const {
-    body: { userID, items, status, totalPrice }
+    body: { userId, items, status }
   } = req;
 
-  const productID = await Product.findOne({ _id: items[0].productID }).lean();
-  if (!productID) throw Error('Product not found', { cause: { status: 404 } });
+  const productId = await Product.findOne({ _id: items[0]!.productId }).lean();
+  if (!productId) throw Error('Product not found', { cause: { status: 404 } });
 
-  const userIDExists = await Order.exists({ userID });
-  if (!userIDExists) throw Error('User not found', { cause: { status: 404 } });
+  const userIdExists = await User.exists({ _id: userId });
+  if (!userIdExists) throw Error('User not found', { cause: { status: 404 } });
 
-  const total = items.reduce((total, item) => total + item.price * item.quantity, 0);
+  const totalPrice = items.reduce((total, item) => total + item.quantity * productId.price, 0);
 
-    const order = await Order.create({ userID, items, totalPrice: total, status } satisfies OrderInputDTO);
+    const order = await Order.create({ userId, items, totalPrice, status });
 
   res.status(201).json(order);
 };
@@ -47,20 +47,19 @@ export const getOrderById: RequestHandler<IdParams, OrderDTO> = async (req, res)
   res.json(order);
 };
 
-export const updateOrder: RequestHandler<IdParams, OrderDTO, OrderInputDTO> = async (req, res) => {
+export const updateOrder: RequestHandler<IdParams, OrderDTO> = async (req, res) => {
   const {
     params: { id },
-    body: { userID, items }
+    body: { userId, items }
   } = req;
 
   if (!isValidObjectId(id)) throw new Error('Invalid id', { cause: { status: 400 } });
 
-  const productID = await Product.findOne({ _id: items[0].productID }).lean();
-  if (!productID) throw Error('Product not found', { cause: { status: 404 } });
+  const productId = await Product.findOne({ _id: items[0].productId }).lean();
+  if (!productId) throw Error('Product not found', { cause: { status: 404 } });
 
-  const userIDExists = await Order.exists({ userID });
-  if (!userIDExists) throw Error('User not found', { cause: { status: 404 } });
-
+  const userIdExists = await Order.exists({ userId });
+  if (!userIdExists) throw Error('User not found', { cause: { status: 404 } });
 
   const order = await Order.findByIdAndUpdate(id, { new: true }).lean();
 

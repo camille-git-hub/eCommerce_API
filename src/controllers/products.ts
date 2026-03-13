@@ -16,7 +16,7 @@ export const getProducts: RequestHandler<unknown, ProductDTO[]> = async (req, re
   res.json(products);
 };
 
-export const createProduct: RequestHandler<unknown, ProductDTO, ProductInputDTO> = async (req, res) => {
+export const createProduct: RequestHandler<unknown, ProductInputDTO> = async (req, res) => {
   const {
     body: { productName }
   } = req;
@@ -24,7 +24,7 @@ export const createProduct: RequestHandler<unknown, ProductDTO, ProductInputDTO>
 
   if (found) throw Error('Product already exists', { cause: { status: 400 } });
 
-  const categoryExists = await Category.exists({ _id: req.body.categoryID });
+  const categoryExists = await Category.exists({ _id: req.body.categoryId });
   if (!categoryExists) throw Error('Category not found', { cause: { status: 404 } });
 
   const product = await Product.create(req.body satisfies ProductInputDTO);
@@ -54,7 +54,7 @@ export const updateProduct: RequestHandler<IdParams, ProductDTO, ProductInputDTO
 
   if (!isValidObjectId(id)) throw new Error('Invalid id', { cause: { status: 400 } });
 
-  const categoryExists = await Category.exists({ _id: req.body.categoryID });
+  const categoryExists = await Category.exists({ _id: req.body.categoryId });
   if (!categoryExists) throw Error('Category not found', { cause: { status: 404 } });
 
   const product = await Product.findByIdAndUpdate(id, body, { new: true }).lean();
